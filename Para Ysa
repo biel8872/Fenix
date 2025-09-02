@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Surpresa ❤️</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #ffdde1, #ee9ca7);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 60px;
+      color: #fff;
+      text-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff99cc;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .game, .final {
+      position: relative;
+      z-index: 1;
+    }
+    .personagem {
+      font-size: 100px;
+      margin-top: 50px;
+      animation: bounce 1s infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
+    .texto {
+      font-size: 26px;
+      margin: 10px 0;
+      color: #fff;
+      text-shadow: 0 0 5px #ff6699;
+    }
+    button {
+      font-size: 40px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 15px;
+      background: #ff4d6d;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff99cc;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background: #ff3366;
+    }
+    .barra {
+      width: 80%;
+      height: 30px;
+      border: 3px solid #fff;
+      margin: 30px auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 15px #ff99cc;
+    }
+    .progresso {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff4d6d, #ff99cc);
+      transition: width 0.5s;
+    }
+    .final {
+      display: none;
+      margin-top: 150px;
+    }
+    .final h1 {
+      font-size: 80px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 20px #ff4d6d, 0 0 40px #ff99cc;
+      animation: glow 1.5s infinite alternate;
+    }
+    .declaracao {
+      font-size: 28px;
+      margin: 30px auto 0 auto;
+      max-width: 800px;
+      color: #fff;
+      text-shadow: 0 0 6px #ff99cc;
+      background: rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 12px #ff99cc;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ff6699; }
+      to { text-shadow: 0 0 30px #ff3366; }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" src="sweater-weather.mp3" loop></audio>
+  <div class="game">
+    <div class="personagem">🐼</div>
+    <p class="texto">Clique no coração para carregar o amor!</p>
+    <div style="display: flex; justify-content: center; align-items: center;">
+      <button onclick="playMusic(); shootHeart()">💘</button>
+      <span id="mensagemParaVoce" style="display:none; margin-left: 20px; font-size: 32px; color: #fff; text-shadow: 0 0 5px #ff6699;">Para você 🥰🥰</span>
+    </div>
+    <div class="barra">
+      <div class="progresso" id="progresso"></div>
+    </div>
+  </div>
+
+  <div class="final" id="final">
+    <h1>EU TE AMO ❤️</h1>
+    <div class="declaracao">
+      Você é a pessoa mais importante da minha vida. Estar ao seu lado me traz paz, alegria e a certeza de que o amor verdadeiro existe. Eu amo cada detalhe em você, cada sorriso, cada gesto, e sou grato por ter você comigo. Meu coração é todo seu, e quero que saiba que o quanto eu te amo não cabe em palavras. ❤️
+    </div>
+    <canvas id="fireworks"></canvas>
+  </div>
+
+  <script>
+    let progresso = 0;
+
+    function playMusic() {
+      const audio = document.getElementById("bgMusic");
+      audio.play();
+    }
+
+    function shootHeart() {
+      if (progresso >= 100) return;
+
+      progresso += 20;
+      document.getElementById("progresso").style.width = progresso + "%";
+
+      if (progresso >= 100) {
+        document.getElementById("mensagemParaVoce").style.display = "inline";
+        setTimeout(() => {
+          document.querySelector(".game").style.display = "none";
+          document.getElementById("final").style.display = "block";
+          startFireworks();
+        }, 1700); // Mostra o texto por 1.7 segundos antes de ir para o final
+      }
+    }
+
+    // 🎆 Animação de fogos
+    function startFireworks() {
+      const canvas = document.getElementById("fireworks");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+
+      function random(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function createFirework(x, y) {
+        const colors = ["#ff4d6d", "#ff99cc", "#ffff66", "#66ffff", "#ff66ff"];
+        for (let i = 0; i < 80; i++) {
+          particles.push({
+            x: x,
+            y: y,
+            angle: random(0, Math.PI * 2),
+            speed: random(2, 6),
+            radius: 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 100
+          });
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+          p.x += Math.cos(p.angle) * p.speed;
+          p.y += Math.sin(p.angle) * p.speed;
+          p.life--;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+          if (p.life <= 0) particles.splice(i, 1);
+        });
+        requestAnimationFrame(animate);
+      }
+
+      setInterval(() => {
+        createFirework(random(100, canvas.width - 100), random(100, canvas.height - 100));
+      }, 700);
+
+      animate();
+    }
+  </script>
+</body>
+</html>
